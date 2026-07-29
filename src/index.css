@@ -1,0 +1,21 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+:root{
+    --primary:#1B4F82;
+    --accent:#F18F01;
+    --text:#2C3E50;
+    --light:#F4F6F8;
+    --white:#FFFFFF;
+    --font-main:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+    font-family: var(--font-main);
+    color: var(--text);
+    line-height: 1.6;
+    background: #FFFFFF;
+
+}

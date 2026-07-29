@@ -1,0 +1,105 @@
+.site-header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+}
+
+.navbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:20px 5%;
+
+    background:#1B4F82;
+}
+
+.logo{
+
+    color:white;
+
+    font-size:28px;
+
+    font-weight:bold;
+}
+
+.nav-links{
+
+    list-style:none;
+
+    display:flex;
+
+    gap:30px;
+}
+
+.nav-links a{
+
+    color:white;
+
+    text-decoration:none;
+
+    font-weight:500;
+
+    transition:.3s;
+}
+
+.nav-links a:hover{
+
+    color:#F18F01;
+}
+
+.menu-toggle{
+
+    display:none;
+
+    font-size:30px;
+
+    color:white;
+
+    background:none;
+
+    border:none;
+
+    cursor:pointer;
+}
+
+@media(max-width:768px){
+
+.nav-links{
+
+display:none;
+
+position:absolute;
+
+top:70px;
+
+left:0;
+
+width:100%;
+
+background:#1B4F82;
+
+flex-direction:column;
+
+text-align:center;
+
+padding:20px 0;
+
+}
+
+.nav-links.open{
+
+display:flex;
+
+}
+
+.menu-toggle{
+
+display:block;
+
+}
+
+}
