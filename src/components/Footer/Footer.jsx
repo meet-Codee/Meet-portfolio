@@ -7,10 +7,14 @@ function Footer() {
     <footer className="footer">
       <div className="footer-container">
 
-        <h2 className="footer-logo">Meet</h2>
+        <h2 className="footer-logo">MAD</h2>
+             <p className="footer-tagline">
+          Crafting modern, responsive and user-friendly web experiences.
+        </p>
 
         <p className="footer-text">
           © {year} Meet Amit Dharaiya. All Rights Reserved.
+               
         </p>
 
         <div className="footer-socials">

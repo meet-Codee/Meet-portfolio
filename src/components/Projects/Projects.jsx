@@ -7,7 +7,7 @@ function Projects() {
       title: "Weather App",
       description:
         "Real-time weather dashboard using OpenWeather API.",
-      image: "/weather.jpg",
+      image: "/weather.png",
       tech: ["React", "API"],
       demo: "#",
       github: "#",
@@ -17,7 +17,7 @@ function Projects() {
       title: "Portfolio Website",
       description:
         "Responsive portfolio built using React and CSS.",
-      image: "/portfolio.jpg",
+      image: "/portimg.png",
       tech: ["React", "CSS"],
       demo: "#",
       github: "#",
@@ -27,7 +27,7 @@ function Projects() {
       title: "Todo App",
       description:
         "Task management application with CRUD functionality.",
-      image: "/todo.jpg",
+      image: "/todo.png",
       tech: ["JavaScript", "React"],
       demo: "#",
       github: "#",
