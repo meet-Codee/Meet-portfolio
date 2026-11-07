@@ -1,76 +1,147 @@
 import { useState, useEffect } from "react";
+import { sound } from "../../utils/audio";
+import { Volume2, VolumeX, Terminal, Menu, X, ShieldAlert, Sparkles } from "lucide-react";
 import "./Navbar.css";
 
-function Navbar() {
+function Navbar({ onOpenTerminal }) {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  const [theme, setTheme] = useState(
-    localStorage.getItem("theme") || "light"
-  );
+  const [scrolled, setScrolled] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(sound.isEnabled());
 
   useEffect(() => {
-    document.body.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggleAudio = () => {
+    const newState = sound.toggle();
+    setAudioEnabled(newState);
+  };
+
+  const handleNavClick = () => {
+    sound.click();
+    setMenuOpen(false);
   };
 
   return (
-    <header className="site-header">
-      <nav className="navbar">
-
-        <a href="#" className="logo">
-          MEET
+    <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
+      <nav className="navbar" aria-label="Main Navigation">
+        {/* Brand / Logo */}
+        <a 
+          href="#hero" 
+          className="logo" 
+          onClick={handleNavClick}
+          onMouseEnter={() => sound.hover()}
+        >
+          <span className="logo-glitch" data-text="MAD">MAD</span>
+          <span className="logo-tag">DEV.2189</span>
         </a>
 
-        <ul className={menuOpen ? "nav-links active" : "nav-links"}>
+        {/* Desktop Navigation Links */}
+        <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
           <li>
-            <a href="#about" onClick={() => setMenuOpen(false)}>
-              About
+            <a 
+              href="#neon-shadow" 
+              onClick={handleNavClick}
+              onMouseEnter={() => sound.hover()}
+              className="nav-flagship-link"
+            >
+              <Sparkles size={14} className="neon-icon" />
+              <span>Neon Shadow</span>
             </a>
           </li>
-
           <li>
-            <a href="#skills" onClick={() => setMenuOpen(false)}>
-              Skills
-            </a>
-          </li>
-
-          <li>
-            <a href="#projects" onClick={() => setMenuOpen(false)}>
+            <a 
+              href="#projects" 
+              onClick={handleNavClick}
+              onMouseEnter={() => sound.hover()}
+            >
               Projects
             </a>
           </li>
-
           <li>
-            <a href="#contact" onClick={() => setMenuOpen(false)}>
-              Contact
+            <a 
+              href="#achievements" 
+              onClick={handleNavClick}
+              onMouseEnter={() => sound.hover()}
+            >
+              Achievements
+            </a>
+          </li>
+          <li>
+            <a 
+              href="#skills" 
+              onClick={handleNavClick}
+              onMouseEnter={() => sound.hover()}
+            >
+              Arsenal
+            </a>
+          </li>
+          <li>
+            <a 
+              href="#about" 
+              onClick={handleNavClick}
+              onMouseEnter={() => sound.hover()}
+            >
+              About
+            </a>
+          </li>
+          <li>
+            <a 
+              href="#contact" 
+              onClick={handleNavClick}
+              onMouseEnter={() => sound.hover()}
+              className="nav-contact-pill"
+            >
+              Initiate Contact
             </a>
           </li>
         </ul>
 
+        {/* Action Controls */}
         <div className="nav-actions">
-
+          {/* Cyber Sound FX Toggle */}
           <button
-            className="theme-toggle"
-            onClick={toggleTheme}
-            aria-label="Toggle Theme"
+            className={`action-btn sound-toggle ${audioEnabled ? "active" : ""}`}
+            onClick={toggleAudio}
+            onMouseEnter={() => sound.hover()}
+            aria-label={audioEnabled ? "Disable Sound FX" : "Enable Sound FX"}
+            title={audioEnabled ? "Sound FX: ON (Click to mute)" : "Sound FX: OFF (Click to unmute)"}
           >
-            {theme === "light" ? "🌙" : "☀️"}
+            {audioEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </button>
 
+          {/* Terminal Launcher */}
+          <button
+            className="action-btn terminal-btn"
+            onClick={() => {
+              sound.click();
+              onOpenTerminal();
+            }}
+            onMouseEnter={() => sound.hover()}
+            aria-label="Open Cyber Terminal"
+            title="Open Interactive Cyber Terminal"
+          >
+            <Terminal size={18} />
+            <span className="terminal-shortcut">CLI</span>
+          </button>
+
+          {/* Mobile Menu Toggle */}
           <button
             className="menu-toggle"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle Menu"
+            onClick={() => {
+              sound.click();
+              setMenuOpen(!menuOpen);
+            }}
+            aria-label="Toggle Navigation Menu"
+            aria-expanded={menuOpen}
           >
-            ☰
+            {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
-
         </div>
-
       </nav>
     </header>
   );

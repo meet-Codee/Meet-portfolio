@@ -1,69 +1,120 @@
+import { sound } from "../../utils/audio";
+import { ExternalLink, Sparkles, Cpu, Shield, Globe, Award } from "lucide-react";
+import { Github } from "../common/Icons";
 import "./Projects.css";
 
 function Projects() {
   const projects = [
     {
-      id: 1,
-      title: "Weather App",
+      id: "christina",
+      title: "Christina — AI Multi-Lingual Voice Tutor",
+      tagline: "1st Place Winner at Jarvis 1.0 (24h Hackathon)",
+      badge: "Jarvis 1.0 Hackathon Winner",
+      badgeType: "gold",
       description:
-        "Real-time weather dashboard using OpenWeather API.",
-      image: "/weather.png",
-      tech: ["React", "API"],
-      demo: "#",
-      github: "#",
+        "An AI-powered voice tutor for Indian school students (Classes 5–12) studying in regional languages. Powered by Google Gemini and Sarvam AI, featuring a zero-dependency real-time voice pipeline, gapless Web Audio timeline, Socratic 4-rung hint ladder, and interactive WebGL liquid orb visuals.",
+      image: "/projects/christina-icon.png",
+      tech: ["Google Gemini API", "Sarvam AI", "Web Audio API", "WebGL", "Node.js", "Vercel"],
+      demo: "https://christina-murex.vercel.app",
+      github: "https://github.com/meet-Codee/christina",
+      stats: "11 Indian Languages • Socratic Hint Ladder"
     },
     {
-      id: 2,
-      title: "Portfolio Website",
+      id: "skyguard",
+      title: "SkyGuard AI — SIH 2026 Defense Prototype",
+      tagline: "National Hackathon Prototype",
+      badge: "Smart India Hackathon",
+      badgeType: "cyan",
       description:
-        "Responsive portfolio built using React and CSS.",
+        "An intelligent airspace surveillance and threat-monitoring prototype developed for the Smart India Hackathon (SIH 2026). Engineered in Python to analyze drone flight trajectories, predict airspace violations, and automate alert dispatch for security perimeters.",
       image: "/portimg.png",
-      tech: ["React", "CSS"],
-      demo: "#",
-      github: "#",
+      tech: ["Python", "Computer Vision", "Telemetry Analytics", "Automated Defense"],
+      demo: "https://github.com/meet-Codee/SkyGuard_AI-Backup-",
+      github: "https://github.com/meet-Codee/SkyGuard_AI-Backup-",
+      stats: "Real-Time Tracking • Perimeter Telemetry"
     },
     {
-      id: 3,
-      title: "Todo App",
+      id: "portfolio",
+      title: "FolioForge 2026 — Cyber Portfolio System",
+      tagline: "Official ComputeX MSRUAS Submission",
+      badge: "FolioForge 2026 Entry",
+      badgeType: "magenta",
       description:
-        "Task management application with CRUD functionality.",
-      image: "/todo.png",
-      tech: ["JavaScript", "React"],
-      demo: "#",
-      github: "#",
-    },
+        "The very portfolio engine you are exploring right now. Designed from the ground up for 4K Ultra-HD displays with responsive scaling, featuring a zero-asset Web Audio API synthesizer, interactive canvas cyber particle field, and interactive CLI inspector.",
+      image: "/portimg.png",
+      tech: ["React 19", "Vite", "Web Audio API", "HTML5 Canvas", "CSS Glassmorphism"],
+      demo: "https://meet-portfolioo.netlify.app/",
+      github: "https://github.com/meet-Codee/Meet-portfolio",
+      stats: "4K Ready • Zero-Asset Web Audio Synth"
+    }
   ];
 
   return (
     <section id="projects" className="projects-section">
-      <h2>My Projects</h2>
+      <div className="section-header">
+        <div className="section-badge" onMouseEnter={() => sound.hover()}>
+          <Cpu size={16} />
+          <span>PRODUCTION & HACKATHON REPERTOIRE</span>
+        </div>
+
+        <h2 className="section-title">Verified Engineering Projects</h2>
+        <p className="section-subtitle">
+          Real hackathon builds, production AI voice systems, and defense intelligence prototypes. 
+          Every link is live, tested, and verifiable.
+        </p>
+      </div>
 
       <div className="projects-grid">
-        {projects.map((project) => (
-          <div className="project-card" key={project.id}>
-            <img
-              src={project.image}
-              alt={project.title}
-              className="project-image"
-            />
+        {projects.map((p) => (
+          <div 
+            key={p.id} 
+            className="project-card"
+            onMouseEnter={() => sound.hover()}
+          >
+            <div className="card-top">
+              <span className={`project-badge badge-${p.badgeType}`}>
+                <Award size={13} />
+                <span>{p.badge}</span>
+              </span>
+              <span className="project-stats">{p.stats}</span>
+            </div>
 
-            <div className="project-content">
-              <h3>{project.title}</h3>
+            <div className="card-body">
+              <h3 className="project-title">{p.title}</h3>
+              <p className="project-tagline">{p.tagline}</p>
+              <p className="project-desc">{p.description}</p>
+            </div>
 
-              <p>{project.description}</p>
+            <div className="card-tech">
+              {p.tech.map((t, idx) => (
+                <span key={idx} className="tech-pill">
+                  {t}
+                </span>
+              ))}
+            </div>
 
-              <div className="project-tags">
-                {project.tech.map((item, index) => (
-                  <span className="tag" key={index}>
-                    {item}
-                  </span>
-                ))}
-              </div>
+            <div className="card-footer">
+              <a
+                href={p.demo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cyber-btn cyber-btn-primary card-btn"
+                onClick={() => sound.click()}
+              >
+                <ExternalLink size={15} />
+                <span>Live Experience</span>
+              </a>
 
-              <div className="project-links">
-                <a href={project.demo}>Live Demo</a>
-                <a href={project.github}>GitHub</a>
-              </div>
+              <a
+                href={p.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cyber-btn cyber-btn-secondary card-btn"
+                onClick={() => sound.click()}
+              >
+                <Github size={15} />
+                <span>Source Code</span>
+              </a>
             </div>
           </div>
         ))}
