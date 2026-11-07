@@ -1,18 +1,25 @@
 import { useState, useEffect } from "react";
 import { sound } from "../../utils/audio";
-import { Volume2, VolumeX, Terminal, Menu, X, ShieldAlert, Sparkles } from "lucide-react";
+import { Volume2, VolumeX, Terminal, Menu, X, Sparkles, Palette } from "lucide-react";
 import "./Navbar.css";
 
-function Navbar({ onOpenTerminal }) {
+const PALETTES = [
+  { id: "kyoto", label: "Neo-Kyoto", colors: ["#00d4ff", "#ff007f", "#8b5cf6"] },
+  { id: "solar", label: "Solar Flare", colors: ["#ff3366", "#ffb800", "#a855f7"] },
+  { id: "nova", label: "Ultraviolet", colors: ["#a855f7", "#00d4ff", "#ff007f"] },
+  { id: "gold", label: "Champion Gold", colors: ["#ffb800", "#00d4ff", "#ff007f"] },
+];
+
+function Navbar({ onOpenTerminal, palette, onSelectPalette }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(sound.isEnabled());
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      setScrolled(window.scrollY > 30);
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -29,22 +36,34 @@ function Navbar({ onOpenTerminal }) {
   return (
     <header className={`site-header ${scrolled ? "scrolled" : ""}`}>
       <nav className="navbar" aria-label="Main Navigation">
-        {/* Brand / Logo */}
-        <a 
-          href="#hero" 
-          className="logo" 
+        {/* Brand / Orbital Logo */}
+        <a
+          href="#hero"
+          className="logo"
           onClick={handleNavClick}
           onMouseEnter={() => sound.hover()}
         >
-          <span className="logo-glitch" data-text="MAD">MAD</span>
-          <span className="logo-tag">DEV.2189</span>
+          <span className="logo-orbit-emblem" aria-hidden="true">
+            <span className="logo-orbit-ring ring-a"></span>
+            <span className="logo-orbit-ring ring-b"></span>
+            <span className="logo-orbit-core">M</span>
+          </span>
+          <span className="logo-text-group">
+            <span className="logo-glitch">MEET DHARAIYA</span>
+            <span className="logo-sub">BANGALORE • FOLIOFORGE '26</span>
+          </span>
         </a>
 
-        {/* Desktop Navigation Links */}
+        {/* Navigation Links */}
         <ul className={`nav-links ${menuOpen ? "active" : ""}`}>
           <li>
-            <a 
-              href="#neon-shadow" 
+            <a href="#hero" onClick={handleNavClick} onMouseEnter={() => sound.hover()}>
+              Meet
+            </a>
+          </li>
+          <li>
+            <a
+              href="#neon-shadow"
               onClick={handleNavClick}
               onMouseEnter={() => sound.hover()}
               className="nav-flagship-link"
@@ -54,67 +73,70 @@ function Navbar({ onOpenTerminal }) {
             </a>
           </li>
           <li>
-            <a 
-              href="#projects" 
-              onClick={handleNavClick}
-              onMouseEnter={() => sound.hover()}
-            >
-              Projects
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#achievements" 
-              onClick={handleNavClick}
-              onMouseEnter={() => sound.hover()}
-            >
-              Achievements
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#skills" 
-              onClick={handleNavClick}
-              onMouseEnter={() => sound.hover()}
-            >
-              Arsenal
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#about" 
-              onClick={handleNavClick}
-              onMouseEnter={() => sound.hover()}
-            >
+            <a href="#about" onClick={handleNavClick} onMouseEnter={() => sound.hover()}>
               About
             </a>
           </li>
           <li>
-            <a 
-              href="#contact" 
+            <a href="#projects" onClick={handleNavClick} onMouseEnter={() => sound.hover()}>
+              Projects
+            </a>
+          </li>
+          <li>
+            <a href="#skills" onClick={handleNavClick} onMouseEnter={() => sound.hover()}>
+              Skill Orbit
+            </a>
+          </li>
+          <li>
+            <a href="#achievements" onClick={handleNavClick} onMouseEnter={() => sound.hover()}>
+              Awards
+            </a>
+          </li>
+          <li>
+            <a
+              href="#contact"
               onClick={handleNavClick}
               onMouseEnter={() => sound.hover()}
               className="nav-contact-pill"
             >
-              Initiate Contact
+              Contact
             </a>
           </li>
         </ul>
 
-        {/* Action Controls */}
+        {/* Right Controls: Live Spectrum Switcher + Audio + CLI */}
         <div className="nav-actions">
-          {/* Cyber Sound FX Toggle */}
+          <div className="spectrum-switcher" role="group" aria-label="4K Color Spectrum">
+            <Palette size={14} className="spectrum-icon" />
+            {PALETTES.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`spectrum-dot ${palette === p.id ? "active" : ""}`}
+                style={{
+                  background: `linear-gradient(135deg, ${p.colors[0]}, ${p.colors[1]})`,
+                }}
+                onClick={() => {
+                  sound.click();
+                  onSelectPalette(p.id);
+                }}
+                onMouseEnter={() => sound.hover()}
+                title={`Switch 4K Theme: ${p.label}`}
+                aria-label={`Switch theme to ${p.label}`}
+              />
+            ))}
+          </div>
+
           <button
             className={`action-btn sound-toggle ${audioEnabled ? "active" : ""}`}
             onClick={toggleAudio}
             onMouseEnter={() => sound.hover()}
             aria-label={audioEnabled ? "Disable Sound FX" : "Enable Sound FX"}
-            title={audioEnabled ? "Sound FX: ON (Click to mute)" : "Sound FX: OFF (Click to unmute)"}
+            title={audioEnabled ? "Cyber Audio FX: ON" : "Cyber Audio FX: OFF"}
           >
             {audioEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </button>
 
-          {/* Terminal Launcher */}
           <button
             className="action-btn terminal-btn"
             onClick={() => {
@@ -123,13 +145,12 @@ function Navbar({ onOpenTerminal }) {
             }}
             onMouseEnter={() => sound.hover()}
             aria-label="Open Cyber Terminal"
-            title="Open Interactive Cyber Terminal"
+            title="Launch Meet's Interactive CLI Terminal"
           >
-            <Terminal size={18} />
+            <Terminal size={17} />
             <span className="terminal-shortcut">CLI</span>
           </button>
 
-          {/* Mobile Menu Toggle */}
           <button
             className="menu-toggle"
             onClick={() => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import "./CyberBackground.css";
 
-function CyberBackground() {
+function CyberBackground({ palette = "kyoto" }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -11,149 +11,177 @@ function CyberBackground() {
     if (!ctx) return;
 
     let animId;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+
+    const resize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener("resize", resize);
 
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const handleResize = () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+    const paletteColors = {
+      kyoto: ["#00d4ff", "#ff007f", "#8b5cf6", "#ffb800", "#38bdf8"],
+      solar: ["#ff3366", "#ffb800", "#a855f7", "#00d4ff", "#fb7185"],
+      nova: ["#a855f7", "#00d4ff", "#ff007f", "#c084fc", "#ffb800"],
+      gold: ["#ffb800", "#00d4ff", "#ff007f", "#fde047", "#a855f7"],
     };
-    window.addEventListener("resize", handleResize);
+    const colors = paletteColors[palette] || paletteColors.kyoto;
 
-    const mouse = { x: -1000, y: -1000, radius: 140 };
-    const handleMouseMove = (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+    const mouse = { x: width * 0.5, y: height * 0.4, tx: width * 0.5, ty: height * 0.4 };
+    const onMove = (e) => {
+      mouse.tx = e.clientX;
+      mouse.ty = e.clientY;
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
 
-    // Particles setup
-    const count = Math.min(Math.floor((width * height) / 18000), 100);
-    const particles = [];
-    const colors = ["#00f0ff", "#a855f7", "#ff007f", "#38bdf8"];
+    // Create 4K Stardust & Orbital Particles
+    const count = Math.min(Math.floor((width * height) / 14000), 115);
+    const stars = Array.from({ length: count }, (_, i) => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      z: Math.random() * 1.5 + 0.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: (Math.random() - 0.5) * 0.4,
+      size: Math.random() * 2 + 0.7,
+      color: colors[i % colors.length],
+      alpha: Math.random() * 0.65 + 0.25,
+      phase: Math.random() * Math.PI * 2,
+    }));
 
-    for (let i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45,
-        size: Math.random() * 1.8 + 0.6,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        alpha: Math.random() * 0.5 + 0.2,
-      });
-    }
+    // Background Ambient Orbital Rings (Large cosmic gyroscope in deep space)
+    const ambientRings = [
+      { rx: 0.38, ry: 0.14, speed: 0.0022, tilt: -0.32, color: colors[0] },
+      { rx: 0.46, ry: 0.18, speed: -0.0016, tilt: 0.42, color: colors[1] },
+      { rx: 0.54, ry: 0.21, speed: 0.0011, tilt: -0.15, color: colors[2] },
+    ];
 
-    let t = 0;
+    let angle = 0;
+
     const render = () => {
-      t += 0.01;
+      angle += 1;
+      mouse.x += (mouse.tx - mouse.x) * 0.06;
+      mouse.y += (mouse.ty - mouse.y) * 0.06;
+
       ctx.clearRect(0, 0, width, height);
 
-      // Radial background glow that follows the cursor
-      if (mouse.x > 0 && mouse.y > 0) {
-        const radGrad = ctx.createRadialGradient(
-          mouse.x,
-          mouse.y,
-          10,
-          mouse.x,
-          mouse.y,
-          450
-        );
-        radGrad.addColorStop(0, "rgba(0, 240, 255, 0.045)");
-        radGrad.addColorStop(0.5, "rgba(168, 85, 247, 0.025)");
-        radGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
-        ctx.fillStyle = radGrad;
-        ctx.fillRect(0, 0, width, height);
-      }
+      // 1. Interactive Cursor Nebula Spotlight
+      const nebula = ctx.createRadialGradient(
+        mouse.x,
+        mouse.y,
+        10,
+        mouse.x,
+        mouse.y,
+        Math.max(width, height) * 0.42
+      );
+      nebula.addColorStop(0, "rgba(0, 212, 255, 0.075)");
+      nebula.addColorStop(0.35, "rgba(255, 0, 127, 0.045)");
+      nebula.addColorStop(0.7, "rgba(139, 92, 246, 0.025)");
+      nebula.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = nebula;
+      ctx.fillRect(0, 0, width, height);
 
-      // Draw subtle perspective cyber grid on lower part
-      const gridY = height * 0.72;
-      ctx.save();
-      ctx.strokeStyle = "rgba(0, 240, 255, 0.035)";
-      ctx.lineWidth = 1;
+      // 2. Deep-Space Gyroscopic Orbital Rings
+      const cx = width * 0.5 + (mouse.x - width * 0.5) * 0.04;
+      const cy = height * 0.48 + (mouse.y - height * 0.5) * 0.04;
+      const minDim = Math.min(width, height);
 
-      // Horizon line
-      ctx.beginPath();
-      ctx.moveTo(0, gridY);
-      ctx.lineTo(width, gridY);
-      ctx.stroke();
-
-      // Perspective lines converging to center
-      const vanishingX = width * 0.5;
-      const step = width / 18;
-      for (let x = -width * 0.2; x <= width * 1.2; x += step) {
+      ambientRings.forEach((ring, idx) => {
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(ring.tilt + (prefersReducedMotion ? 0 : angle * ring.speed));
         ctx.beginPath();
-        ctx.moveTo(x, height);
-        ctx.lineTo(vanishingX + (x - vanishingX) * 0.15, gridY);
+        ctx.ellipse(0, 0, minDim * ring.rx, minDim * ring.ry, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = ring.color;
+        ctx.globalAlpha = 0.09;
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash(idx % 2 === 0 ? [8, 14] : []);
         ctx.stroke();
-      }
-      ctx.restore();
 
-      // Update & Draw Particles
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
+        // Orbiting satellite spark on each ambient ring
+        const satAngle = angle * ring.speed * 6 + idx * 2;
+        const sx = Math.cos(satAngle) * (minDim * ring.rx);
+        const sy = Math.sin(satAngle) * (minDim * ring.ry);
+        ctx.beginPath();
+        ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+        ctx.fillStyle = ring.color;
+        ctx.globalAlpha = 0.55;
+        ctx.shadowColor = ring.color;
+        ctx.shadowBlur = 12;
+        ctx.fill();
+        ctx.restore();
+      });
 
+      // 3. Stars & Neural Constellation Connections
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
         if (!prefersReducedMotion) {
-          p.x += p.vx;
-          p.y += p.vy;
+          s.x += s.vx * s.z;
+          s.y += s.vy * s.z;
 
-          if (p.x < 0) p.x = width;
-          if (p.x > width) p.x = 0;
-          if (p.y < 0) p.y = height;
-          if (p.y > height) p.y = 0;
+          if (s.x < 0) s.x = width;
+          if (s.x > width) s.x = 0;
+          if (s.y < 0) s.y = height;
+          if (s.y > height) s.y = 0;
 
-          // Mouse push interaction
-          const dx = mouse.x - p.x;
-          const dy = mouse.y - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < mouse.radius) {
-            const force = (mouse.radius - dist) / mouse.radius;
-            p.x -= (dx / dist) * force * 1.8;
-            p.y -= (dy / dist) * force * 1.8;
+          const dx = mouse.x - s.x;
+          const dy = mouse.y - s.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 150 && dist > 0) {
+            const force = (150 - dist) / 150;
+            s.x -= (dx / dist) * force * 1.4;
+            s.y -= (dy / dist) * force * 1.4;
           }
         }
 
+        const twinkle = 0.65 + 0.35 * Math.sin(angle * 0.03 + s.phase);
         ctx.save();
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.alpha;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 6;
+        ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = s.alpha * twinkle;
+        ctx.shadowColor = s.color;
+        ctx.shadowBlur = 8;
         ctx.fill();
         ctx.restore();
 
-        // Connect nearby particles
-        for (let j = i + 1; j < particles.length; j++) {
-          const p2 = particles[j];
-          const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-          if (dist < 90) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const s2 = stars[j];
+          const d = Math.hypot(s.x - s2.x, s.y - s2.y);
+          if (d < 95) {
             ctx.save();
-            ctx.strokeStyle = p.color;
-            ctx.globalAlpha = (1 - dist / 90) * 0.12;
-            ctx.lineWidth = 0.6;
             ctx.beginPath();
-            ctx.moveTo(p.x, p.y);
-            ctx.lineTo(p2.x, p2.y);
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(s2.x, s2.y);
+            ctx.strokeStyle = s.color;
+            ctx.globalAlpha = (1 - d / 95) * 0.13;
+            ctx.lineWidth = 0.65;
             ctx.stroke();
             ctx.restore();
           }
         }
       }
 
-      animId = requestAnimationFrame(render);
+      if (!prefersReducedMotion) {
+        animId = requestAnimationFrame(render);
+      }
     };
 
     render();
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("mousemove", onMove);
     };
-  }, []);
+  }, [palette]);
 
   return <canvas ref={canvasRef} className="cyber-canvas" aria-hidden="true" />;
 }
